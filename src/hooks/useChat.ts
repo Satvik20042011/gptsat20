@@ -18,8 +18,8 @@ export function useChat() {
       timestamp: new Date(),
     };
 
-    // Immediately add user message to the conversation
-    setMessages(prev => [...prev, userMessage]);
+    // Add user message to state
+    setMessages((prev) => [...prev, userMessage]);
     setIsLoading(true);
     setError(null);
 
@@ -33,8 +33,8 @@ export function useChat() {
         timestamp: new Date(),
       };
 
-      // Add the assistant message to the conversation after receiving the response
-      setMessages(prev => [...prev, assistantMessage]);
+      // Add assistant message to state
+      setMessages((prev) => [...prev, assistantMessage]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to get response');
     } finally {
@@ -43,13 +43,13 @@ export function useChat() {
   }, [messages, selectedModel]);
 
   const regenerateResponse = useCallback(async () => {
-    if (messages.length < 2) return;
+    if (messages.length < 2) return; // Ensure there is at least one user and one assistant message
 
     setIsLoading(true);
     setError(null);
 
-    // Regenerate based on the current messages, excluding the last assistant message
-    const previousMessages = messages.slice(0, -1); // Exclude last assistant message
+    // Exclude the last assistant message for regeneration
+    const previousMessages = messages.slice(0, -1);
 
     try {
       const response = await sendMessage(previousMessages, selectedModel);
@@ -61,8 +61,8 @@ export function useChat() {
         timestamp: new Date(),
       };
 
-      // Add the new assistant message and update the conversation history
-      setMessages(prevMessages => [...previousMessages, newAssistantMessage]);
+      // Update the messages with the regenerated response
+      setMessages((prev) => [...previousMessages, newAssistantMessage]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to regenerate response');
     } finally {
