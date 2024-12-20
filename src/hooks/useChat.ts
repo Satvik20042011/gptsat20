@@ -42,15 +42,18 @@ export function useChat() {
 
   const regenerateResponse = useCallback(async () => {
     if (messages.length < 2) return;
-    
+
     setIsLoading(true);
     setError(null);
-    
+
+    // Slice messages to exclude the last assistant message
     const previousMessages = messages.slice(0, -1);
-    
+
     try {
+      // Send the previous messages to regenerate the response
       const response = await sendMessage(previousMessages, selectedModel);
-      
+
+      // Create a new assistant message with the regenerated response
       const newAssistantMessage: Message = {
         id: Date.now().toString(),
         content: response,
@@ -58,7 +61,8 @@ export function useChat() {
         timestamp: new Date(),
       };
 
-      setMessages([...previousMessages, newAssistantMessage]);
+      // Append the new assistant message to the previous messages
+      setMessages(prevMessages => [...previousMessages, newAssistantMessage]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to regenerate response');
     } finally {
