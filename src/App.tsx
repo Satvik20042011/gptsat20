@@ -30,8 +30,7 @@ function App() {
 
   const handleRegenerate = () => {
     if (messages.length > 0) {
-      // Regenerate the last message's response by passing its ID to the regenerateResponse function
-      regenerateResponse(messages[messages.length - 1].id);  // Assuming regenerateResponse takes message ID
+      regenerateResponse(messages[messages.length - 1].id); // Pass the message ID to regenerate response
     }
   };
 
@@ -74,10 +73,10 @@ function App() {
             {messages.length > 1 && !isLoading && (
               <div className="max-w-3xl mx-auto px-4 py-4">
                 <button
-                  onClick={handleRegenerate}  // Call the updated regenerate function
+                  onClick={handleRegenerate}
                   className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-300 
                     hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 
-                    rounded-lg transition-colors"
+                    rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                 >
                   <RefreshCw className="w-4 h-4" />
                   Regenerate response
