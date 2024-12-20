@@ -18,6 +18,7 @@ export function useChat() {
       timestamp: new Date(),
     };
 
+    // Immediately add user message to the conversation
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
     setError(null);
@@ -32,6 +33,7 @@ export function useChat() {
         timestamp: new Date(),
       };
 
+      // Add the assistant message to the conversation after receiving the response
       setMessages(prev => [...prev, assistantMessage]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to get response');
@@ -46,30 +48,27 @@ export function useChat() {
     setIsLoading(true);
     setError(null);
 
-    // Use function form of setMessages to always access the latest state
-    setMessages(prevMessages => {
-      const previousMessages = prevMessages.slice(0, -1);  // Remove the last assistant message
+    // Regenerate based on the current messages, excluding the last assistant message
+    const previousMessages = messages.slice(0, -1); // Exclude last assistant message
 
-      try {
-        const response = sendMessage(previousMessages, selectedModel);
+    try {
+      const response = await sendMessage(previousMessages, selectedModel);
 
-        const newAssistantMessage: Message = {
-          id: Date.now().toString(),
-          content: response,
-          role: 'assistant',
-          timestamp: new Date(),
-        };
+      const newAssistantMessage: Message = {
+        id: Date.now().toString(),
+        content: response,
+        role: 'assistant',
+        timestamp: new Date(),
+      };
 
-        // Return the new message list, appending the regenerated assistant message
-        return [...previousMessages, newAssistantMessage];
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to regenerate response');
-        return prevMessages;  // Return previous messages if error occurs
-      } finally {
-        setIsLoading(false);
-      }
-    });
-  }, [selectedModel]);
+      // Add the new assistant message and update the conversation history
+      setMessages(prevMessages => [...previousMessages, newAssistantMessage]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to regenerate response');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [messages, selectedModel]);
 
   const clearHistory = useCallback(() => {
     setMessages([INITIAL_MESSAGE]);
@@ -87,3 +86,5 @@ export function useChat() {
     clearHistory,
   };
 }
+
+
