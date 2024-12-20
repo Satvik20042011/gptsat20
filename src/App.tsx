@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { ChatMessage } from './components/ChatMessage';
 import { ChatInput } from './components/ChatInput';
 import { ModelSelector } from './components/ModelSelector';
@@ -24,16 +24,24 @@ function App() {
     clearHistory
   } = useChat();
 
+  const [buttonActive, setButtonActive] = useState(false);  // Manage button active state
+
   if (showSplash) {
     return <SplashScreen onComplete={() => setShowSplash(false)} />;
   }
 
-  const handleRegenerate = () => {
-    console.log("Regenerate button clicked!");  // Debugging the click
-    if (messages.length > 0) {
-      regenerateResponse(messages[messages.length - 1].id); // Pass the message ID to regenerate response
+  // Debounced or delayed click handling for the regenerate button
+  const handleRegenerate = useCallback(() => {
+    if (messages.length > 0 && !isLoading) {
+      setButtonActive(true);  // Indicate button is in an active state
+
+      // Use a timeout to simulate a slight delay or handle any async logic
+      setTimeout(() => {
+        regenerateResponse(messages[messages.length - 1].id);  // Trigger regeneration
+        setButtonActive(false);  // Reset active state
+      }, 200);  // Slight delay for visual feedback, adjust as needed
     }
-  };
+  }, [messages, regenerateResponse, isLoading]);
 
   return (
     <div className="min-h-screen bg-transparent dark:bg-gray-900 transition-colors duration-200">
@@ -74,14 +82,15 @@ function App() {
             {messages.length > 1 && !isLoading && (
               <div className="max-w-3xl mx-auto px-4 py-4">
                 <button
-                  onClick={handleRegenerate}
-                  className="relative flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-300 
-                    hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 
-                    rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
-                    z-10 pointer-events-auto"
+                  onClick={handleRegenerate}  // Trigger regenerate logic
+                  disabled={buttonActive || isLoading}  // Disable button during regen process
+                  className={`flex items-center gap-2 px-4 py-2 text-sm ${buttonActive ? 'text-gray-400' : 'text-gray-600'} 
+                    dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 
+                    rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 
+                    ${buttonActive ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                 >
                   <RefreshCw className="w-4 h-4" />
-                  Regenerate response
+                  {buttonActive ? 'Regenerating...' : 'Regenerate response'}
                 </button>
               </div>
             )}
