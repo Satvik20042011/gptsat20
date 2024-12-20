@@ -24,7 +24,7 @@ export function useChat() {
 
     try {
       const response = await sendMessage([...messages, userMessage], selectedModel);
-      
+
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: response,
@@ -46,29 +46,30 @@ export function useChat() {
     setIsLoading(true);
     setError(null);
 
-    // Slice messages to exclude the last assistant message
-    const previousMessages = messages.slice(0, -1);
+    // Use function form of setMessages to always access the latest state
+    setMessages(prevMessages => {
+      const previousMessages = prevMessages.slice(0, -1);  // Remove the last assistant message
 
-    try {
-      // Send the previous messages to regenerate the response
-      const response = await sendMessage(previousMessages, selectedModel);
+      try {
+        const response = sendMessage(previousMessages, selectedModel);
 
-      // Create a new assistant message with the regenerated response
-      const newAssistantMessage: Message = {
-        id: Date.now().toString(),
-        content: response,
-        role: 'assistant',
-        timestamp: new Date(),
-      };
+        const newAssistantMessage: Message = {
+          id: Date.now().toString(),
+          content: response,
+          role: 'assistant',
+          timestamp: new Date(),
+        };
 
-      // Append the new assistant message to the previous messages
-      setMessages(prevMessages => [...previousMessages, newAssistantMessage]);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to regenerate response');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [messages, selectedModel]);
+        // Return the new message list, appending the regenerated assistant message
+        return [...previousMessages, newAssistantMessage];
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to regenerate response');
+        return prevMessages;  // Return previous messages if error occurs
+      } finally {
+        setIsLoading(false);
+      }
+    });
+  }, [selectedModel]);
 
   const clearHistory = useCallback(() => {
     setMessages([INITIAL_MESSAGE]);
