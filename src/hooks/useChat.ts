@@ -10,6 +10,7 @@ export function useChat() {
   const [error, setError] = useState<string | null>(null);
   const [selectedModel, setSelectedModel] = useState<ModelProvider>('mistral');
 
+  // Add a new user message and process it
   const addMessage = useCallback(async (content: string) => {
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -18,7 +19,7 @@ export function useChat() {
       timestamp: new Date(),
     };
 
-    // Add user message to state
+    // Immediately add the user message
     setMessages((prev) => [...prev, userMessage]);
     setIsLoading(true);
     setError(null);
@@ -33,7 +34,7 @@ export function useChat() {
         timestamp: new Date(),
       };
 
-      // Add assistant message to state
+      // Add the assistant response to the conversation
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to get response');
@@ -42,14 +43,18 @@ export function useChat() {
     }
   }, [messages, selectedModel]);
 
+  // Regenerate the last assistant response
   const regenerateResponse = useCallback(async () => {
-    if (messages.length < 2) return; // Ensure there is at least one user and one assistant message
+    if (messages.length === 0) return; // Ensure there are messages to regenerate
 
     setIsLoading(true);
     setError(null);
 
-    // Exclude the last assistant message for regeneration
-    const previousMessages = messages.slice(0, -1);
+    // Exclude the last assistant message (if any) for regeneration
+    const previousMessages =
+      messages[messages.length - 1]?.role === 'assistant'
+        ? messages.slice(0, -1)
+        : [...messages];
 
     try {
       const response = await sendMessage(previousMessages, selectedModel);
@@ -61,8 +66,8 @@ export function useChat() {
         timestamp: new Date(),
       };
 
-      // Update the messages with the regenerated response
-      setMessages((prev) => [...previousMessages, newAssistantMessage]);
+      // Add the regenerated assistant response
+      setMessages([...previousMessages, newAssistantMessage]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to regenerate response');
     } finally {
@@ -70,6 +75,7 @@ export function useChat() {
     }
   }, [messages, selectedModel]);
 
+  // Clear the conversation history
   const clearHistory = useCallback(() => {
     setMessages([INITIAL_MESSAGE]);
     setError(null);
