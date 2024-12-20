@@ -18,14 +18,13 @@ export function useChat() {
       timestamp: new Date(),
     };
 
-    // Immediately add user message to the conversation
     setMessages(prev => [...prev, userMessage]);
     setIsLoading(true);
     setError(null);
 
     try {
       const response = await sendMessage([...messages, userMessage], selectedModel);
-
+      
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: response,
@@ -33,7 +32,6 @@ export function useChat() {
         timestamp: new Date(),
       };
 
-      // Add the assistant message to the conversation after receiving the response
       setMessages(prev => [...prev, assistantMessage]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to get response');
@@ -44,16 +42,15 @@ export function useChat() {
 
   const regenerateResponse = useCallback(async () => {
     if (messages.length < 2) return;
-
+    
     setIsLoading(true);
     setError(null);
-
-    // Regenerate based on the current messages, excluding the last assistant message
-    const previousMessages = messages.slice(0, -1); // Exclude last assistant message
-
+    
+    const previousMessages = messages.slice(0, -1);
+    
     try {
       const response = await sendMessage(previousMessages, selectedModel);
-
+      
       const newAssistantMessage: Message = {
         id: Date.now().toString(),
         content: response,
@@ -61,8 +58,7 @@ export function useChat() {
         timestamp: new Date(),
       };
 
-      // Add the new assistant message and update the conversation history
-      setMessages(prevMessages => [...previousMessages, newAssistantMessage]);
+      setMessages([...previousMessages, newAssistantMessage]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to regenerate response');
     } finally {
@@ -86,5 +82,3 @@ export function useChat() {
     clearHistory,
   };
 }
-
-
