@@ -28,6 +28,13 @@ function App() {
     return <SplashScreen onComplete={() => setShowSplash(false)} />;
   }
 
+  const handleRegenerate = () => {
+    if (messages.length > 0) {
+      // Regenerate the last message's response by passing its ID to the regenerateResponse function
+      regenerateResponse(messages[messages.length - 1].id);  // Assuming regenerateResponse takes message ID
+    }
+  };
+
   return (
     <div className="min-h-screen bg-transparent dark:bg-gray-900 transition-colors duration-200">
       <Background />
@@ -67,7 +74,7 @@ function App() {
             {messages.length > 1 && !isLoading && (
               <div className="max-w-3xl mx-auto px-4 py-4">
                 <button
-                  onClick={regenerateResponse}
+                  onClick={handleRegenerate}  // Call the updated regenerate function
                   className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-300 
                     hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 
                     rounded-lg transition-colors"
@@ -87,7 +94,3 @@ function App() {
 }
 
 export default App;
-
-
-
-
