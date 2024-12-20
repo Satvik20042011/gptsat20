@@ -6,6 +6,8 @@ import { Footer } from './components/Footer';
 import { SplashScreen } from './components/splash/SplashScreen';
 import { ThemeToggle } from './components/ThemeToggle';
 import { ChatHistory } from './components/ChatHistory';
+import { Background } from './components/Background';
+import { useChat } from './hooks/useChat';
 import { MessageSquare, AlertCircle, RefreshCw } from 'lucide-react';
 import './styles/animations.css';
 
@@ -27,17 +29,8 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-transparent dark:bg-gray-900 transition-colors duration-200 relative">
-      {/* Full Background Image */}
-      <div
-        className="absolute top-0 left-0 w-full h-full bg-cover bg-center"
-        style={{
-          backgroundImage: 'url("https://images.unsplash.com/photo-1604187747307-6e2b72fe77b1")',
-          zIndex: -1,
-          filter: 'brightness(0.6)',
-        }}
-      />
-
+    <div className="min-h-screen bg-transparent dark:bg-gray-900 transition-colors duration-200">
+      <Background />
       <ThemeToggle />
       <ModelSelector selectedModel={selectedModel} onModelChange={setSelectedModel} />
       <ChatHistory messages={messages} onClear={clearHistory} />
@@ -87,7 +80,6 @@ function App() {
           </div>
         )}
       </div>
-      
       <ChatInput onSend={addMessage} disabled={isLoading} />
       <Footer />
     </div>
@@ -95,3 +87,7 @@ function App() {
 }
 
 export default App;
+
+
+
+give beautiful greenary background 
