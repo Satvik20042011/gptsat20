@@ -1,22 +1,24 @@
 import React from 'react';
 import { ModelProvider } from '../types/api';
-import { Bot } from 'lucide-react';
+import { Bot, Star, Sun, Flame, Music, Code } from 'lucide-react';
 
 interface ModelSelectorProps {
   selectedModel: ModelProvider;
   onModelChange: (model: ModelProvider) => void;
 }
 
-const models: { id: ModelProvider; name: string }[] = [
-  { id: 'mistral', name: 'Mistral AI' },
-  { id: 'gemini', name: 'Gemini' },
-  { id: 'llama', name: 'Llama' },
-  { id: 'chatgpt', name: 'ChatGPT' },
-  { id: 'groq', name: 'Groq' },
-  { id: 'xai', name: 'xAI' },
+const models: { id: ModelProvider; name: string; icon: React.ElementType }[] = [
+  { id: 'mistral', name: 'Mistral AI', icon: Star },
+  { id: 'gemini', name: 'Gemini', icon: Sun },
+  { id: 'llama', name: 'Llama', icon: Flame },
+  { id: 'chatgpt', name: 'ChatGPT', icon: Bot },
+  { id: 'groq', name: 'Groq', icon: Code },
+  { id: 'xai', name: 'xAI', icon: Music },
 ];
 
 export function ModelSelector({ selectedModel, onModelChange }: ModelSelectorProps) {
+  const SelectedIcon = models.find((model) => model.id === selectedModel)?.icon || Bot;
+
   return (
     <div className="fixed top-4 right-4 z-10">
       <select
@@ -30,7 +32,9 @@ export function ModelSelector({ selectedModel, onModelChange }: ModelSelectorPro
           </option>
         ))}
       </select>
-      <Bot className="absolute left-3 top-2.5 w-5 h-5 text-gray-500" />
+      <div className="absolute left-3 top-2.5">
+        <SelectedIcon className="w-5 h-5 text-gray-500" />
+      </div>
     </div>
   );
 }
