@@ -1,0 +1,40 @@
+@keyframes twinkle {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+@keyframes fly-across {
+  from {
+    transform: translateX(0) translateY(0);
+  }
+  50% {
+    transform: translateX(60vw) translateY(-20px);
+  }
+  to {
+    transform: translateX(120vw) translateY(0);
+  }
+}
+
+@keyframes title-reveal {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-title {
+  animation: title-reveal 1s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fade-in 2s ease-out forwards;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
