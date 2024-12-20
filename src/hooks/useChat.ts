@@ -46,30 +46,25 @@ export function useChat() {
     setIsLoading(true);
     setError(null);
 
-    // Use function form of setMessages to always access the latest state
-    setMessages(prevMessages => {
-      const previousMessages = prevMessages.slice(0, -1);  // Remove the last assistant message
+    const previousMessages = messages.slice(0, -1);  // Remove the last assistant message
 
-      try {
-        const response = sendMessage(previousMessages, selectedModel);
+    try {
+      const response = await sendMessage(previousMessages, selectedModel);
 
-        const newAssistantMessage: Message = {
-          id: Date.now().toString(),
-          content: response,
-          role: 'assistant',
-          timestamp: new Date(),
-        };
+      const newAssistantMessage: Message = {
+        id: Date.now().toString(),
+        content: response,
+        role: 'assistant',
+        timestamp: new Date(),
+      };
 
-        // Return the new message list, appending the regenerated assistant message
-        return [...previousMessages, newAssistantMessage];
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to regenerate response');
-        return prevMessages;  // Return previous messages if error occurs
-      } finally {
-        setIsLoading(false);
-      }
-    });
-  }, [selectedModel]);
+      setMessages(prevMessages => [...previousMessages, newAssistantMessage]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to regenerate response');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [messages, selectedModel]);
 
   const clearHistory = useCallback(() => {
     setMessages([INITIAL_MESSAGE]);
