@@ -45,16 +45,23 @@ export function useChat() {
 
   // Regenerate the last assistant response
   const regenerateResponse = useCallback(async () => {
-    if (messages.length === 0) return; // Ensure there are messages to regenerate
+    // Prevent regeneration if conditions are not met
+    if (messages.length < 2) {
+      setError('Not enough messages to regenerate.');
+      return;
+    }
+
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage.role !== 'assistant') {
+      setError('Last message is not an assistant message.');
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
 
-    // Exclude the last assistant message (if any) for regeneration
-    const previousMessages =
-      messages[messages.length - 1]?.role === 'assistant'
-        ? messages.slice(0, -1)
-        : [...messages];
+    // Exclude the last assistant message for regeneration
+    const previousMessages = messages.slice(0, -1);
 
     try {
       const response = await sendMessage(previousMessages, selectedModel);
@@ -66,7 +73,7 @@ export function useChat() {
         timestamp: new Date(),
       };
 
-      // Add the regenerated assistant response
+      // Replace the last assistant message with the new response
       setMessages([...previousMessages, newAssistantMessage]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to regenerate response');
