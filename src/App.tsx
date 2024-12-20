@@ -29,6 +29,7 @@ function App() {
   }
 
   const handleRegenerate = () => {
+    console.log("Regenerate button clicked!");  // Debugging the click
     if (messages.length > 0) {
       regenerateResponse(messages[messages.length - 1].id); // Pass the message ID to regenerate response
     }
@@ -74,9 +75,10 @@ function App() {
               <div className="max-w-3xl mx-auto px-4 py-4">
                 <button
                   onClick={handleRegenerate}
-                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-300 
+                  className="relative flex items-center gap-2 px-4 py-2 text-sm text-gray-600 dark:text-gray-300 
                     hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 
-                    rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+                    z-10 pointer-events-auto"
                 >
                   <RefreshCw className="w-4 h-4" />
                   Regenerate response
